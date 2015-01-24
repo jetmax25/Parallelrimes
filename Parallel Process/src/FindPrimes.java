@@ -1,67 +1,71 @@
+import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Random;
 
+class PrimeFinder implements Runnable {
+   private static Thread[] threads;
+   BitSet numbers;
+   int size;
+   ArrayList<Integer> primes;
+   int counter;
+   PrimeFinder( int size){
+       
+     numbers = new BitSet(size / 2);
+     this.size = size;
+     primes = new ArrayList<Integer>();
+     primes.add(2);
+     counter = 1;
+     int found = 1;
+   }
+   
+   public void run() {
+	   test();
+     for(int i = 1; i < size/2; i++)
+     {
+    	
+    	 if(!numbers.get(i))
+    	 {
+    		 sieve(i);
+    		 System.out.println(i * 2 + 1);
+    		 counter++;
+    	 }
+     }
+     System.out.println("counter " + counter);
+   
+   }
+   
+   public void sieve(int num)
+   {
+	   for(int i = 2 * (num * num + num); i < size / 2; i+= (num *2) + 1)
+	   {
+		   numbers.set(i);
+	   }
+   }
+   
+   public void test(){
+	   System.out.print("test");
+   }
+   
+   public void start ()
+   {
+	  threads = new Thread[8];
+	 
+      for(int i = 0; i < 8; i++){
+	      if (threads[i] == null)
+	      {
+	    	  
+	         threads[i] = new Thread(this);
+	      }
+      }
+     threads[3].start();
+   }
 
+}
 
 public class FindPrimes {
-	
-	static BitSet numbers = new BitSet(100000000);
-	public static final int MAX = 100000000;
-	
-	public static void main(String[] args)
-	{
-		
-		//holds 8 threads
-		Thread threads[] = new Thread[8];
-			
-		//loops through the treads
-		int threadCount = 0;
-		
-		int total = 0;
-		int primes = 2;
-		
-		
-		while(primes < Math.sqrt(MAX))
-		{
-			//if the thread is being used go to the next one
-			if( threads[threadCount] != null && !threads[threadCount].isAlive())
-			{
-				threadCount++;
-				threadCount %= 8;
-			}
-			
-			//dont bother checking nonprime numbers
-			while(numbers.get(primes) == true)
-			{
-				primes++;
-			}
-			
-			threads[threadCount] = new Thread(new FindPrimes.Primer(primes));
-			threads[threadCount].run();
-			primes++;
-			
-		}
-	}
-	
-	public static class Primer implements Runnable
-	{
-		int prime;
-		
-		public Primer(int prime)
-		{
-			this.prime = prime;
-		}
-		
-		@Override
-		public void run() {
-			// TODO Auto-generated method stub
-			System.out.println("Starting run " + prime);
-			for(int i = prime * prime; i < MAX; i += prime)
-			{
-				numbers.set(i);
-			}
-			
-			System.out.println("Ending run " + prime);
-		}
-		
-	}
+   public static void main(String args[]) {
+   
+      PrimeFinder R1 = new PrimeFinder( 100);
+      R1.start();
+   }
 }
